@@ -4,7 +4,8 @@ from scipy.ndimage import filters
 import random
 import time
 
-
+# Converting a colour image into gray scale image and pre-processing step for 
+# initializing dictionaries for Union find function.
 def segment_prim(image, k_val, sigma, min_size):
     start_time = time.time()
     im = np.array(Image.open(image).convert('L'))
@@ -56,8 +57,9 @@ def segment_prim(image, k_val, sigma, min_size):
         for v in u.set_items[c]:
             r_c, v_c = another_v[v]
             im[r_c, v_c] = colors[c]
-    # im = Image.fromarray(im)
-    # im.save("tomato-prim-segment.png")
+    im = Image.fromarray(im)
+    # saving the output image
+    im.save("tomato-prim-segment.png")
     time_program = time.time() - start_time
     print("computing the segments", time_program)
     return time_program
@@ -71,7 +73,7 @@ def neighbor_edge(row_val, col_val):
     right = (row_val, col_val+1)
     return [up, down, left, right]
 
-
+# region growing to group image pixels whose intensities are lesser than the threshold calculated using threshold function.
 class Unionfind:
     def __init__(self, i_s):
         self.set_id = dict((s, s) for s in i_s)
@@ -94,12 +96,12 @@ class Unionfind:
             self.set_items[long_set].append(item)
         del self.set_items[short_set]
 
-
+# calculating the edge weights while converting image into a graph.
 def diff(image_val, w, h, new_w, new_h):
     im_weight = np.abs(int(image_val[w, h]) - int(image_val[new_w, new_h]))
     return im_weight
 
-
+# threshold function pivotal in calculating segments 
 def threshold_calc(size, k):
     return k/size
 
